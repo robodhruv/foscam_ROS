@@ -15,7 +15,7 @@ class IP_Cam():
 		print "camera initialised"
 		self.image_pub = rospy.Publisher("ipcam",Image)
 		self.bridge = CvBridge()
-		self.image_sub = rospy.Subscriber("image_topic",Image,self.callback)
+		rospy.init_node('image_converter', anonymous=True)
 		print "publisher set"
 
 		
@@ -32,7 +32,11 @@ class IP_Cam():
 				jpg = bytes[a:b+2]
 				bytes= bytes[b+2:]
 				img = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),cv2.IMREAD_COLOR)
-				image_message = cv2_to_imgmsg(img, encoding="passthrough")
+				# image_message = cv2_to_imgmsg(img, encoding="passthrough")
+				try:
+					self.image_pub.publish(self.bridge.cv2_to_imgmsg(img, encoding="passthrough"))
+				except CvBridgeError as e:
+					print(e)
 				# cv2.imshow('cam',img)
 				if cv2.waitKey(1) ==27:
 					exit(0)
