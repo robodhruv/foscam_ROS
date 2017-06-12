@@ -44,7 +44,8 @@ class IP_Cam():
 	
 		
 if __name__ == "__main__":
-	url = 'http://10.101.202.9:183/videostream.cgi?user=martian_eye&pwd=rover2409'
+	# url = 'http://10.101.202.9:183/videostream.cgi?user=martian_eye&pwd=rover2409'
+	url = 'http://trackfield.webcam.oregonstate.edu/mjpg/video.mjpg'
 	cam = IP_Cam(url)
 	cam.start()
 	cam.run()
