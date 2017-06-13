@@ -34,7 +34,10 @@ class IP_Cam():
 				img = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),cv2.IMREAD_COLOR)
 				# image_message = cv2_to_imgmsg(img, encoding="passthrough")
 				try:
-					self.image_pub.publish(self.bridge.cv2_to_imgmsg(img, encoding="passthrough"))
+					ros_img = self.bridge.cv2_to_imgmsg(img, "bgr8")
+					ros_img.header.stamp = rospy.get_rostime()
+					ros_img.header.frame_id = "video_stuff"
+					self.image_pub.publish(ros_img)
 				except CvBridgeError as e:
 					print(e)
 				# cv2.imshow('cam',img)
