@@ -11,6 +11,7 @@ import time
 import requests
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
+import urllib
 
 class IP_Cam():
 
@@ -29,25 +30,20 @@ class IP_Cam():
 	def run(self):
 		bytes=''
 		while (1):
-			bytes+=self.stream.raw.read(1024)
-			a = bytes.find('\xff\xd8')
-			b = bytes.find('\xff\xd9')
-			if a!=-1 and b!=-1:
-				jpg = bytes[a:b+2]
-				bytes= bytes[b+2:]
-				img = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),cv2.IMREAD_COLOR)
-				# image_message = cv2_to_imgmsg(img, encoding="passthrough")
-				try:
-					ros_img = self.bridge.cv2_to_imgmsg(img, "bgr8")
-					ros_img.header.stamp = rospy.get_rostime()
-					ros_img.header.frame_id = "video_stuff"
-					self.image_pub.publish(ros_img)
-				except CvBridgeError as e:
-					print(e)
-				# cv2.imshow('cam',img)
-				if cv2.waitKey(1) ==27:
-					exit(0)
-
+			resp = urllib.urlopen(url)
+			img = np.asarray(bytearray(resp.read()), dtype="uint8")
+			image = cv2.imdecode(image, cv2.IMAGE_COLOR)
+			# image_message = cv2_to_imgmsg(img, encoding="passthrough")
+			try:
+				ros_img = self.bridge.cv2_to_imgmsg(img, "bgr8")
+				ros_img.header.stamp = rospy.get_rostime()
+				ros_img.header.frame_id = "video_stuff"
+				self.image_pub.publish(ros_img)
+			except CvBridgeError as e:
+				print(e)
+			# cv2.imshow('cam',img)
+			if cv2.waitKey(1) ==27:
+				exit(0)
 	
 		
 if __name__ == "__main__":
